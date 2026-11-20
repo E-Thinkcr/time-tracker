@@ -4,6 +4,8 @@ Aplicación de escritorio para **registrar el tiempo por tarea** durante la jorn
 
 ![Ventana principal](docs/principal.png)
 
+📘 **[Guía de uso paso a paso](docs/GUIA_DE_USO.md)**: instalación, uso diario, administración y dashboard de Power BI.
+
 ## Qué hace
 
 - **Registro por tarea**: botones para tareas productivas (Task, Meeting, Peer Assistance…) y no productivas (Break, Lunch…), configurables.
