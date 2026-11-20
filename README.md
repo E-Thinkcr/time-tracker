@@ -14,6 +14,27 @@ Aplicación de escritorio para **registrar el tiempo por tarea** durante la jorn
 - **Usuarios y roles** (ADMIN / USUARIO) con contraseñas cifradas; el admin puede crear usuarios y agregar tiempo manual.
 - **Tema oscuro y claro.**
 - **Sin dependencias externas**: solo la librería estándar de Python.
+- **Dashboard de Power BI incluido**, con datos ficticios para probarlo sin instalar nada más.
+
+## Dashboard de Power BI
+
+![Dashboard: resumen](docs/dashboard_resumen.png)
+
+![Dashboard: detalle por usuario](docs/dashboard_detalle.png)
+
+**Página "Resumen"**: horas totales, % productivo, horas por jornada, Tasks atendidos y minutos por Task. También muestra las horas por día (productivas y no productivas), el ranking de productividad por usuario, la distribución por tipo de tarea y las horas por aplicación.
+
+**Página "Detalle por usuario"**: una tabla comparativa del equipo, un mapa de calor de las horas productivas por hora y día de la semana, y la tendencia semanal comparada con la meta del 80 %.
+
+Los datos de [`datos_ejemplo/registros_ejemplo.csv`](datos_ejemplo/registros_ejemplo.csv) son **ficticios**: 6 usuarios inventados, 4 semanas y unos 6,000 registros con las mismas columnas que genera la app. Se pueden regenerar con `python datos_ejemplo/generar_datos.py`.
+
+### Abrir el dashboard
+
+1. Abre `dashboard/TimeTracker.pbip` con **Power BI Desktop**.
+2. Ve a **Transformar datos → Editar parámetros** y cambia `CarpetaRegistros` por la ruta de tu carpeta `datos_ejemplo` (o la carpeta `registros` real de la app).
+3. Haz clic en **Actualizar**.
+
+El proyecto está en formato **PBIP** (texto), así que en GitHub se puede ver cada cambio del modelo y de los visuales.
 
 ## Requisitos
 
@@ -61,26 +82,33 @@ Para centralizar los datos de un equipo, pon en `carpeta_datos` una carpeta comp
 | `max_intentos_login` / `bloqueo_login_segundos` | Bloqueo temporal tras varios intentos fallidos. |
 | `tema` | `OSCURO` o `CLARO`. |
 
-## Power BI
+## Modelo de datos (Power BI)
 
-1. **Obtener datos → Carpeta** y selecciona la carpeta `registros`.
-2. **Combinar y transformar**. Todos los archivos tienen las mismas columnas:
+- **Registros**: se carga con Power Query desde la carpeta de CSV (**Obtener datos → Carpeta**) y combina todos los archivos. Todos tienen estas columnas:
 
 | Columna | Ejemplo |
 |---|---|
 | `fecha`, `inicio`, `fin` | `2026-11-18`, `09:00:00`, `09:12:30` |
 | `usuario` | `ana` |
-| `tipo_tarea`, `tarea_id`, `categoria` | `Task`, `INC-4521`, `Productiva` |
+| `tipo_tarea`, `tarea_id`, `categoria` | `Task`, `TSK-45210`, `Productiva` |
 | `sistema`, `proceso`, `titulo` | `Excel`, `excel.exe`, *(vacío si `capturar_titulos` está apagado)* |
 | `segundos`, `minutos` | `750`, `12.5` |
 | `origen`, `registrado_por` | `AUTO` / `MANUAL`, `admin` |
 
-3. Usa la columna **`segundos`** (número entero) para los cálculos: no depende del separador decimal de tu configuración regional. Medidas de ejemplo:
+- **Calendario**: es una tabla DAX calculada que va del primer al último día con registros, relacionada con `Registros[fecha]`.
+- Los cálculos usan **`segundos`** (número entero), porque no depende del separador decimal de la configuración regional.
+
+Medidas principales:
 
 ```DAX
-Horas = DIVIDE ( SUM ( Registros[segundos] ), 3600 )
-Horas productivas = CALCULATE ( [Horas], Registros[categoria] = "Productiva" )
-% Productivo = DIVIDE ( [Horas productivas], [Horas] )
+Horas              = DIVIDE ( SUM ( Registros[segundos] ), 3600 )
+Horas productivas  = CALCULATE ( [Horas], Registros[categoria] = "Productiva" )
+% Productivo       = DIVIDE ( [Horas productivas], [Horas] )
+Jornadas           = COUNTROWS ( SUMMARIZE ( Registros, Registros[usuario], Registros[fecha] ) )
+Horas por jornada  = DIVIDE ( [Horas], [Jornadas] )
+Tasks atendidos    = CALCULATE ( DISTINCTCOUNT ( Registros[tarea_id] ), Registros[tipo_tarea] = "Task" )
+Minutos por Task   = DIVIDE ( CALCULATE ( SUM ( Registros[segundos] ), Registros[tipo_tarea] = "Task" ) / 60, [Tasks atendidos] )
+% Tiempo manual    = DIVIDE ( CALCULATE ( SUM ( Registros[segundos] ), Registros[origen] = "MANUAL" ), SUM ( Registros[segundos] ) )
 ```
 
 ## Seguridad y privacidad
@@ -117,6 +145,8 @@ timetracker/
 tests/             # pytest
 app.py             # Punto de entrada
 build.bat          # Genera el .exe con PyInstaller
+dashboard/         # Proyecto de Power BI (PBIP): modelo + reporte
+datos_ejemplo/     # Datos ficticios y el script que los genera
 ```
 
 ## Licencia

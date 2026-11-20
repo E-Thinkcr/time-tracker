@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "abd3f5b80fed454072ff",
+  "position": {
+    "x": 268,
+    "y": 95,
+    "z": 5000,
+    "height": 105,
+    "width": 228,
+    "tabOrder": 5000
+  },
+  "visual": {
+    "visualType": "card",
+    "drillFilterOtherVisuals": true,
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Registros"
+                    }
+                  },
+                  "Property": "% Productivo"
+                }
+              },
+              "queryRef": "Registros.% Productivo",
+              "nativeQueryRef": "% Productivo"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

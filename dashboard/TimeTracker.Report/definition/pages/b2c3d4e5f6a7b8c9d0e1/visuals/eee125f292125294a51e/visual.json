@@ -1,0 +1,203 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "eee125f292125294a51e",
+  "position": {
+    "x": 20,
+    "y": 95,
+    "z": 17000,
+    "height": 250,
+    "width": 1240,
+    "tabOrder": 17000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "drillFilterOtherVisuals": true,
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Registros"
+                    }
+                  },
+                  "Property": "usuario"
+                }
+              },
+              "queryRef": "Registros.usuario",
+              "nativeQueryRef": "usuario"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Registros"
+                    }
+                  },
+                  "Property": "Jornadas"
+                }
+              },
+              "queryRef": "Registros.Jornadas",
+              "nativeQueryRef": "Jornadas"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Registros"
+                    }
+                  },
+                  "Property": "Horas"
+                }
+              },
+              "queryRef": "Registros.Horas",
+              "nativeQueryRef": "Horas"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Registros"
+                    }
+                  },
+                  "Property": "Horas productivas"
+                }
+              },
+              "queryRef": "Registros.Horas productivas",
+              "nativeQueryRef": "Horas productivas"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Registros"
+                    }
+                  },
+                  "Property": "Horas no productivas"
+                }
+              },
+              "queryRef": "Registros.Horas no productivas",
+              "nativeQueryRef": "Horas no productivas"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Registros"
+                    }
+                  },
+                  "Property": "% Productivo"
+                }
+              },
+              "queryRef": "Registros.% Productivo",
+              "nativeQueryRef": "% Productivo"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Registros"
+                    }
+                  },
+                  "Property": "Horas por jornada"
+                }
+              },
+              "queryRef": "Registros.Horas por jornada",
+              "nativeQueryRef": "Horas por jornada"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Registros"
+                    }
+                  },
+                  "Property": "Tasks atendidos"
+                }
+              },
+              "queryRef": "Registros.Tasks atendidos",
+              "nativeQueryRef": "Tasks atendidos"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Registros"
+                    }
+                  },
+                  "Property": "Minutos por Task"
+                }
+              },
+              "queryRef": "Registros.Minutos por Task",
+              "nativeQueryRef": "Minutos por Task"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Registros"
+                    }
+                  },
+                  "Property": "% Tiempo manual"
+                }
+              },
+              "queryRef": "Registros.% Tiempo manual",
+              "nativeQueryRef": "% Tiempo manual"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Registros"
+                  }
+                },
+                "Property": "% Productivo"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Resumen por usuario'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

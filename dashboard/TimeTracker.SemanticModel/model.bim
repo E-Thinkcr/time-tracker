@@ -1,0 +1,294 @@
+{
+  "name": "SemanticModel",
+  "compatibilityLevel": 1567,
+  "model": {
+    "culture": "es-ES",
+    "dataAccessOptions": {
+      "legacyRedirects": true,
+      "returnErrorValuesAsNull": true
+    },
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "sourceQueryCulture": "es-ES",
+    "tables": [
+      {
+        "name": "Registros",
+        "columns": [
+          {
+            "name": "fecha",
+            "dataType": "dateTime",
+            "sourceColumn": "fecha",
+            "summarizeBy": "none",
+            "formatString": "dd/mm/yyyy"
+          },
+          {
+            "name": "usuario",
+            "dataType": "string",
+            "sourceColumn": "usuario",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "inicio",
+            "dataType": "dateTime",
+            "sourceColumn": "inicio",
+            "summarizeBy": "none",
+            "formatString": "hh:nn:ss"
+          },
+          {
+            "name": "fin",
+            "dataType": "dateTime",
+            "sourceColumn": "fin",
+            "summarizeBy": "none",
+            "formatString": "hh:nn:ss"
+          },
+          {
+            "name": "tipo_tarea",
+            "dataType": "string",
+            "sourceColumn": "tipo_tarea",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "tarea_id",
+            "dataType": "string",
+            "sourceColumn": "tarea_id",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "categoria",
+            "dataType": "string",
+            "sourceColumn": "categoria",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "sistema",
+            "dataType": "string",
+            "sourceColumn": "sistema",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "proceso",
+            "dataType": "string",
+            "sourceColumn": "proceso",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "titulo",
+            "dataType": "string",
+            "sourceColumn": "titulo",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "segundos",
+            "dataType": "int64",
+            "sourceColumn": "segundos",
+            "summarizeBy": "sum",
+            "formatString": "0"
+          },
+          {
+            "name": "minutos",
+            "dataType": "double",
+            "sourceColumn": "minutos",
+            "summarizeBy": "sum",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "origen",
+            "dataType": "string",
+            "sourceColumn": "origen",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "registrado_por",
+            "dataType": "string",
+            "sourceColumn": "registrado_por",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "hora",
+            "dataType": "int64",
+            "sourceColumn": "hora",
+            "summarizeBy": "none",
+            "formatString": "0"
+          }
+        ],
+        "measures": [
+          {
+            "name": "Horas",
+            "expression": "DIVIDE ( SUM ( Registros[segundos] ), 3600 )",
+            "formatString": "#,0.0"
+          },
+          {
+            "name": "Horas productivas",
+            "expression": "CALCULATE ( [Horas], Registros[categoria] = \"Productiva\" )",
+            "formatString": "#,0.0"
+          },
+          {
+            "name": "Horas no productivas",
+            "expression": "CALCULATE ( [Horas], Registros[categoria] = \"No productiva\" )",
+            "formatString": "#,0.0"
+          },
+          {
+            "name": "% Productivo",
+            "expression": "DIVIDE ( [Horas productivas], [Horas] )",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "Jornadas",
+            "expression": "COUNTROWS ( SUMMARIZE ( Registros, Registros[usuario], Registros[fecha] ) )",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Horas por jornada",
+            "expression": "DIVIDE ( [Horas], [Jornadas] )",
+            "formatString": "#,0.0"
+          },
+          {
+            "name": "Tasks atendidos",
+            "expression": "CALCULATE ( DISTINCTCOUNT ( Registros[tarea_id] ), Registros[tipo_tarea] = \"Task\" )",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Minutos por Task",
+            "expression": "DIVIDE ( CALCULATE ( SUM ( Registros[segundos] ), Registros[tipo_tarea] = \"Task\" ) / 60, [Tasks atendidos] )",
+            "formatString": "#,0.0"
+          },
+          {
+            "name": "% Tiempo manual",
+            "expression": "DIVIDE ( CALCULATE ( SUM ( Registros[segundos] ), Registros[origen] = \"MANUAL\" ), SUM ( Registros[segundos] ) )",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "Meta productividad",
+            "expression": "0.8",
+            "formatString": "0%"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Registros",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Origen = Folder.Files(CarpetaRegistros),",
+                "    SoloCsv = Table.SelectRows(Origen, each Text.Lower([Extension]) = \".csv\" and Text.StartsWith([Name], \"registros_\")),",
+                "    ConDatos = Table.AddColumn(SoloCsv, \"Datos\", each Table.PromoteHeaders(Csv.Document([Content], [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]), [PromoteAllScalars = true])),",
+                "    Combinado = Table.Combine(ConDatos[Datos]),",
+                "    SinVacios = Table.ReplaceValue(Combinado, \"\", null, Replacer.ReplaceValue, {\"inicio\", \"fin\"}),",
+                "    Tipos = Table.TransformColumnTypes(SinVacios, {",
+                "        {\"fecha\", type date}, {\"usuario\", type text}, {\"inicio\", type time}, {\"fin\", type time},",
+                "        {\"tipo_tarea\", type text}, {\"tarea_id\", type text}, {\"categoria\", type text},",
+                "        {\"sistema\", type text}, {\"proceso\", type text}, {\"titulo\", type text},",
+                "        {\"segundos\", Int64.Type}, {\"minutos\", type number}, {\"origen\", type text}, {\"registrado_por\", type text}",
+                "    }, \"en-US\"),",
+                "    ConHora = Table.AddColumn(Tipos, \"hora\", each if [inicio] = null then null else Time.Hour([inicio]), Int64.Type)",
+                "in",
+                "    ConHora"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Calendario",
+        "columns": [
+          {
+            "type": "calculatedTableColumn",
+            "name": "Fecha",
+            "dataType": "dateTime",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "sourceColumn": "[Fecha]",
+            "summarizeBy": "none",
+            "formatString": "dd/mm/yyyy"
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "Día",
+            "dataType": "string",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "sourceColumn": "[Día]",
+            "summarizeBy": "none",
+            "sortByColumn": "Número día"
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "Número día",
+            "dataType": "int64",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "sourceColumn": "[Número día]",
+            "summarizeBy": "none",
+            "formatString": "0",
+            "isHidden": true
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "Semana",
+            "dataType": "dateTime",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "sourceColumn": "[Semana]",
+            "summarizeBy": "none",
+            "formatString": "dd/mm/yyyy"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Calendario",
+            "mode": "import",
+            "source": {
+              "type": "calculated",
+              "expression": [
+                "VAR Fechas = CALENDAR ( MIN ( Registros[fecha] ), MAX ( Registros[fecha] ) )",
+                "RETURN",
+                "    SELECTCOLUMNS (",
+                "        Fechas,",
+                "        \"Fecha\", [Date],",
+                "        \"Día\", FORMAT ( [Date], \"ddd\" ),",
+                "        \"Número día\", WEEKDAY ( [Date], 2 ),",
+                "        \"Semana\", [Date] - WEEKDAY ( [Date], 2 ) + 1",
+                "    )"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "Registros_Calendario",
+        "fromTable": "Registros",
+        "fromColumn": "fecha",
+        "toTable": "Calendario",
+        "toColumn": "Fecha"
+      }
+    ],
+    "expressions": [
+      {
+        "name": "CarpetaRegistros",
+        "kind": "m",
+        "expression": [
+          "\"C:\\Users\\X380 Yoga\\Downloads\\time-tracker\\datos_ejemplo\" meta [IsParameterQuery = true, Type = \"Text\", IsParameterQueryRequired = true]"
+        ],
+        "annotations": [
+          {
+            "name": "PBI_ResultType",
+            "value": "Text"
+          }
+        ]
+      }
+    ],
+    "annotations": [
+      {
+        "name": "PBI_QueryOrder",
+        "value": "[\"CarpetaRegistros\",\"Registros\"]"
+      },
+      {
+        "name": "__PBI_TimeIntelligenceEnabled",
+        "value": "0"
+      }
+    ]
+  }
+}
