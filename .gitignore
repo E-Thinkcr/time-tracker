@@ -1,0 +1,27 @@
+# Datos y configuración locales (nunca subir)
+config.json
+usuarios.json
+estado_*.json
+registros/
+datos/
+*.csv
+*.log
+*.lock
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# Editores / sistema
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
