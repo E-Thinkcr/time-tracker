@@ -1,0 +1,4 @@
+# La app no tiene dependencias externas (solo librería estándar).
+# Esto es solo para pruebas y para generar el .exe:
+pytest>=8
+pyinstaller>=6

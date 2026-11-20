@@ -1,0 +1,22 @@
+{
+  "carpeta_datos": "",
+  "tema": "OSCURO",
+  "capturar_titulos": false,
+  "categorias_productivas": [
+    "Task",
+    "Meeting",
+    "Peer Assistance",
+    "Peercheck",
+    "Sales Assistance",
+    "Maintenance"
+  ],
+  "categorias_no_productivas": [
+    "Soporte IT",
+    "Break",
+    "Lunch",
+    "Bathroom"
+  ],
+  "max_hueco_segundos": 300,
+  "max_intentos_login": 5,
+  "bloqueo_login_segundos": 30
+}
